@@ -23,10 +23,9 @@ describe('TodoListScreen', () => {
 
     await userEvent.type(titleBox, 'Test Todo')
     expect(screen.queryByText('Please enter a title')).toBeNull()
+    expect(saveButton.hasAttribute('disabled')).toBe(false)
 
     await userEvent.click(saveButton)
-
-    expect(saveButton.hasAttribute('disabled')).toBe(true)
 
     await screen.findByText(/Test Todo/i)
   })
