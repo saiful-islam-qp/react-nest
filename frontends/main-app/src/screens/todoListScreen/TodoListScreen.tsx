@@ -7,7 +7,8 @@ import {
   WuButton,
 } from '@npm-questionpro/wick-ui-lib'
 import React from 'react'
-import type {ITodo} from '../types/ITodo'
+import type {ITodo} from '../../types/ITodo'
+import {API_BASE_URL} from '../../constants/appConstants'
 
 interface IProps {
   userId?: string
@@ -20,30 +21,7 @@ export const TodoListScreen: React.FC<IProps> = () => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false)
   const [showError, setShowError] = React.useState<boolean>(false)
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
-
-  const handleSave = async (): Promise<void> => {
-    if (title.trim() === '') {
-      setShowError(true)
-      return
-    } else {
-      setShowError(false)
-    }
-
-    setIsLoading(true)
-    const newTodo = await callCreateApi(title)
-    setIsLoading(false)
-
-    setIsOpen(false)
-    setTitle('')
-    setTodos(prevTodos => [...prevTodos, newTodo])
-  }
-
-  const handleUpdateTitle = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setTitle(e.target.value)
-    if (e.target.value.trim() !== '') {
-      setShowError(false)
-    }
-  }
+  const [serverError, setServerError] = React.useState<unknown | null>(null)
 
   return (
     <div>
@@ -86,7 +64,7 @@ export const TodoListScreen: React.FC<IProps> = () => {
 }
 
 const callCreateApi = async (title: string): Promise<ITodo> => {
-  const newTodo = await fetch('/api/todos', {
+  const newTodo = await fetch(`${API_BASE_URL}todos`, {
     method: 'POST',
     headers: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -105,4 +83,21 @@ const callCreateApi = async (title: string): Promise<ITodo> => {
     })
 
   return newTodo
+}
+
+const fetchAllTodos = async (): Promise<ITodo[]> => {
+  const response = await fetch(`${API_BASE_URL}todos`, {
+    method: 'GET',
+    headers: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'Content-Type': 'application/json',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch todos')
+  }
+
+  const data = await response.json()
+  return data.data as ITodo[]
 }

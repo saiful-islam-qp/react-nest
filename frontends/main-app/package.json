@@ -28,6 +28,7 @@
     "@npm-questionpro/wick-ui-eslint-config-frontend": "^0.0.3",
     "@npm-questionpro/wick-ui-prettier-config": "^1.0.0",
     "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.1.4",

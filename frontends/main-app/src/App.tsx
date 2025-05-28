@@ -1,6 +1,6 @@
 import {WuPrimaryNavbar} from '@npm-questionpro/wick-ui-lib'
 import './App.css'
-import {TodoListScreen} from './screens/TodoListScreen'
+import {TodoListScreen} from './screens/todoListScreen/TodoListScreen'
 import {API_BASE_URL} from './constants/appConstants'
 import type {IServerResponse} from './types/IServerResponse'
 import type {IUser} from './types/IUser'

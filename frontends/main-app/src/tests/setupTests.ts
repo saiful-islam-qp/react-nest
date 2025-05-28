@@ -4,6 +4,7 @@ import * as ResizeObserverModule from 'resize-observer-polyfill'
 
 import '@testing-library/dom'
 import {mswTestServer} from '../msw/mswTestServer'
+import '@testing-library/jest-dom/vitest'
 
 beforeAll(() => {
   // https://stackoverflow.com/a/72543616/8596140
