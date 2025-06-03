@@ -14,11 +14,11 @@ export const TodoListScreen: React.FC<IProps> = () => {
     refetch()
   }
 
-  if (status === 'in-progress' || status === 'idle') {
+  if (status === 'pending') {
     return <div>Loading...</div>
   }
   if (status === 'error') {
-    throw new Error(error ?? 'An error occurred while fetching todos')
+    throw new Error(error?.message ?? 'An error occurred while fetching todos')
   }
 
   if (todos === null) throw new Error('Todos data is null')

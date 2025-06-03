@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import {API_BASE_URL} from '../../../constants/appConstants'
 import type {ITodo} from '../../../types/ITodo'
+import {useQuery, type UseQueryResult} from '@tanstack/react-query'
 
 const fetchAllTodos = async (): Promise<ITodo[]> => {
   const response = await fetch(`${API_BASE_URL}todos`, {
@@ -19,44 +20,11 @@ const fetchAllTodos = async (): Promise<ITodo[]> => {
   return data.data as ITodo[]
 }
 
-const useGetTodos = (): {
-  status: 'idle' | 'in-progress' | 'error' | 'success'
-  error: string | null
-  data: ITodo[] | null
-  refetch: () => void
-} => {
-  const [status, setStatus] = useState<
-    'idle' | 'in-progress' | 'error' | 'success'
-  >('idle')
-  const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<ITodo[] | null>(null)
-
-  console.log('error', error, status, data)
-
-  useEffect(() => {
-    if (status === 'idle') {
-      setStatus('in-progress')
-
-      fetchAllTodos()
-        .then(data => {
-          setData(data)
-          setStatus('success')
-        })
-        .catch(error => {
-          setStatus('error')
-          console.log('error', error)
-          setError(error ?? 'An error occurred while fetching todos')
-          setData(null)
-        })
-    }
-  }, [status])
-
-  return {
-    status,
-    error,
-    data,
-    refetch: (): void => setStatus('idle'),
-  }
+const useGetTodos = (): UseQueryResult<ITodo[], Error> => {
+  return useQuery<ITodo[]>({
+    queryKey: ['todos'],
+    queryFn: fetchAllTodos,
+  })
 }
 
 export const todoListScreenApi = {

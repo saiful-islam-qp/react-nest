@@ -19,7 +19,7 @@
   "dependencies": {
     "@npm-questionpro/wick-ui-icon": "^6.2.0",
     "@npm-questionpro/wick-ui-lib": "^0.20.0",
-    "@tanstack/react-query": "^5.76.1",
+    "@tanstack/react-query": "^5.80.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
