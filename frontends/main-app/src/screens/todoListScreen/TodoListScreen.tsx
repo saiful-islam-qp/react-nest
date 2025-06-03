@@ -23,29 +23,33 @@ export const TodoListScreen: React.FC<IProps> = () => {
 
   if (todos === null) throw new Error('Todos data is null')
 
+  const isTodosEmpty = todos.length === 0
+
   return (
     <div>
-      <h1>Welcome to the Todo App</h1>
+      {isTodosEmpty && <h1>Welcome to the Todo App</h1>}
       <CreateTodo onTodoCreated={handleTodoCreated} />
 
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-            </tr>
-          </thead>
-          <tbody>
-            {todos.map((todo, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{todo.title}</td>
+      {!isTodosEmpty && (
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {todos.map((todo, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{todo.title}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

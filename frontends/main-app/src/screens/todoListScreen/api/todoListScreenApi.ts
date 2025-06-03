@@ -31,6 +31,8 @@ const useGetTodos = (): {
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<ITodo[] | null>(null)
 
+  console.log('error', error, status, data)
+
   useEffect(() => {
     if (status === 'idle') {
       setStatus('in-progress')
@@ -41,8 +43,9 @@ const useGetTodos = (): {
           setStatus('success')
         })
         .catch(error => {
-          setStatus(error?.message ?? 'error')
-          setError(error?.message ?? 'An error occurred while fetching todos')
+          setStatus('error')
+          console.log('error', error)
+          setError(error ?? 'An error occurred while fetching todos')
           setData(null)
         })
     }

@@ -91,4 +91,17 @@ describe('TodoListScreen', () => {
     // verify error message is displayed
     await screen.findByText(/failed to fetch/i)
   })
+
+  test('Error message is displayed if fetch todos api call fails', async () => {
+    mswTestServer.use(
+      http.get(`${API_BASE_URL}todos`, async () => {
+        return HttpResponse.error()
+      }),
+    )
+
+    await testUtil.renderWithRoute(<App />, {route: '/'})
+
+    // verify error message is displayed
+    await screen.findByText(/failed to fetch/i)
+  })
 })
