@@ -1,64 +1,51 @@
-import {
-  WuModal,
-  WuModalHeader,
-  WuModalContent,
-  WuModalFooter,
-  WuModalClose,
-  WuButton,
-} from '@npm-questionpro/wick-ui-lib'
 import React from 'react'
 import type {ITodo} from '../../types/ITodo'
 import {API_BASE_URL} from '../../constants/appConstants'
+import {todoListScreenApi} from './api/todoListScreenApi'
+import {CreateTodo} from '../../features/createTodo/CreateTodo'
 
 interface IProps {
   userId?: string
 }
 
 export const TodoListScreen: React.FC<IProps> = () => {
-  const [todos, setTodos] = React.useState<ITodo[]>([])
-  // State to manage the title input and modal visibility
-  const [title, setTitle] = React.useState<string>('')
-  const [isOpen, setIsOpen] = React.useState<boolean>(false)
-  const [showError, setShowError] = React.useState<boolean>(false)
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
-  const [serverError, setServerError] = React.useState<unknown | null>(null)
+  const {data: todos, refetch, status, error} = todoListScreenApi.useGetTodos()
+  const handleTodoCreated = (_todo: ITodo): void => {
+    refetch()
+  }
+
+  if (status === 'in-progress' || status === 'idle') {
+    return <div>Loading...</div>
+  }
+  if (status === 'error') {
+    throw new Error(error ?? 'An error occurred while fetching todos')
+  }
+
+  if (todos === null) throw new Error('Todos data is null')
 
   return (
     <div>
       <h1>Welcome to the Todo App</h1>
-      <button onClick={() => setIsOpen(true)}>Create Todo</button>
+      <CreateTodo onTodoCreated={handleTodoCreated} />
 
       <div>
-        {todos.map((todo, index) => (
-          <div key={index}>
-            {index + 1} {todo.title}
-          </div>
-        ))}
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            {todos.map((todo, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{todo.title}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <WuModal open={isOpen} onOpenChange={setIsOpen}>
-        <WuModalHeader>Create Todo</WuModalHeader>
-        <WuModalContent>
-          <input
-            type="text"
-            title={title}
-            onChange={handleUpdateTitle}
-            placeholder="Title"
-            aria-label="title"
-            required
-          />
-          {showError && <p style={{color: 'red'}}>Please enter a title</p>}
-        </WuModalContent>
-        <WuModalFooter>
-          <WuModalClose>Close</WuModalClose>
-          <WuButton
-            loading={isLoading}
-            disabled={isLoading}
-            onClick={handleSave}
-          >
-            Save
-          </WuButton>
-        </WuModalFooter>
-      </WuModal>
     </div>
   )
 }

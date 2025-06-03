@@ -6,14 +6,23 @@ import {http, HttpResponse, mswTestServer} from '../../../msw/mswTestServer'
 import {API_BASE_URL} from '../../../constants/appConstants'
 
 describe('TodoListScreen', () => {
-  test('Initially a user should see welcome screen with create todo button', async () => {
+  test('User should a todos list', async () => {
     await testUtil.renderWithRoute(<App />, {route: '/'})
 
-    screen.getByText('Welcome to the Todo App')
-    const createTodoButton = screen.getByRole('button', {name: /create todo/i})
+    // check todo list is displayed
+    screen.getByRole('cell', {name: /todo 1/i})
+    screen.getByRole('cell', {name: /todo 2/i})
+    screen.getByRole('cell', {name: /todo 3/i})
+  })
 
+  test('User should be able to create a todo', async () => {
+    await testUtil.renderWithRoute(<App />, {route: '/'})
+
+    // open the create todo dialog
+    const createTodoButton = await screen.findByRole('button', {
+      name: /create todo/i,
+    })
     await userEvent.click(createTodoButton)
-
     screen.getByRole('dialog')
 
     const titleBox = screen.getByRole('textbox', {name: /title/i})
@@ -23,6 +32,7 @@ describe('TodoListScreen', () => {
     await userEvent.click(saveButton)
     screen.getByText('Please enter a title')
 
+    // enter title and click save
     await userEvent.type(titleBox, 'Test Todo')
     expect(screen.queryByText('Please enter a title')).toBeNull()
     expect(saveButton.hasAttribute('disabled')).toBe(false)
@@ -32,7 +42,20 @@ describe('TodoListScreen', () => {
     await screen.findByText(/Test Todo/i)
   })
 
-  test('Error message is displayed if api call fails', async () => {
+  test('welcome message is displayed if there are no todos', async () => {
+    mswTestServer.use(
+      http.get(`${API_BASE_URL}todos`, async () => {
+        return HttpResponse.json({data: []})
+      }),
+    )
+    await testUtil.renderWithRoute(<App />, {route: '/'})
+
+    // verify welcome message is displayed with create todo button p
+    screen.getByText(/welcome to the todo app/i)
+    screen.getByRole('button', {name: /create todo/i})
+  })
+
+  test('Error message is displayed if create todo api call fails', async () => {
     mswTestServer.use(
       http.post(`${API_BASE_URL}todos`, async () => {
         return HttpResponse.error()
