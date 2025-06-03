@@ -5,6 +5,10 @@ import {
   WuModalFooter,
   WuModalClose,
   WuButton,
+  WuFormGroup,
+  WuInput,
+  WuInputError,
+  WuLabel,
 } from '@npm-questionpro/wick-ui-lib'
 import React, {useEffect} from 'react'
 import type {ITodo} from '../../../types/ITodo'
@@ -63,7 +67,7 @@ export const CreateTodoModal: React.FC<IProps> = ({
     <WuModal open={isOpen} onOpenChange={onOpenChange}>
       <WuModalHeader>Create Todo</WuModalHeader>
       <WuModalContent>
-        <input
+        {/* <input
           type="text"
           title={title}
           onChange={handleUpdateTitle}
@@ -73,7 +77,27 @@ export const CreateTodoModal: React.FC<IProps> = ({
         />
         {showValidationError && (
           <p style={{color: 'red'}}>Please enter a title</p>
-        )}
+        )} */}
+        <WuFormGroup
+          className="wu-form-group"
+          Input={
+            <WuInput
+              type="text"
+              title={title}
+              onChange={handleUpdateTitle}
+              placeholder="Title"
+              aria-label="title"
+              required
+              style={{padding: '10px'}}
+            />
+          }
+          Error={
+            showValidationError ? (
+              <WuInputError message="Please enter a title" />
+            ) : null
+          }
+          Label={<WuLabel>Todo Title</WuLabel>}
+        ></WuFormGroup>
       </WuModalContent>
       <WuModalFooter>
         <WuModalClose>Close</WuModalClose>
