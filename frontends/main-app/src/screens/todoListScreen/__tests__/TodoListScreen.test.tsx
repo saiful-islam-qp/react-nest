@@ -55,6 +55,14 @@ describe('TodoListScreen', () => {
     screen.getByRole('button', {name: /create todo/i})
   })
 
+  test('welcome message is not displayed if there are todos', async () => {
+    await testUtil.renderWithRoute(<App />, {route: '/'})
+
+    // verify welcome message is not displayed
+    expect(screen.queryByText(/welcome to the todo app/i)).toBeNull()
+    expect(screen.queryByRole('button', {name: /create todo/i})).not.toBeNull()
+  })
+
   test('Error message is displayed if create todo api call fails', async () => {
     mswTestServer.use(
       http.post(`${API_BASE_URL}todos`, async () => {
