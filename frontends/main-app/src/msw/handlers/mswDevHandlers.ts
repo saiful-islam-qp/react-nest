@@ -23,6 +23,20 @@ export const mswDevHandlers = [
     const user = userMockDb.getUser()
     return sendResponse<IUser>(user)
   }),
+  http.get(`${API_BASE_URL}todos/:id`, async ({params}) => {
+    await delayedResponse()
+
+    const todoId = params.id as string
+    if (!todoId) {
+      return HttpResponse.json({error: 'Todo ID is required'}, {status: 400})
+    }
+
+    const todo = todosMockDb.getTodoById(todoId)
+    if (!todo) {
+      return HttpResponse.json({error: 'Todo not found'}, {status: 404})
+    }
+    return sendResponse(todo)
+  }),
   http.post(`${API_BASE_URL}todos`, async ({request}) => {
     await delayedResponse()
 

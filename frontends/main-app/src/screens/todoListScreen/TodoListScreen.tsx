@@ -1,8 +1,8 @@
 import React from 'react'
 import type {ITodo} from '../../types/ITodo'
-import {API_BASE_URL} from '../../constants/appConstants'
 import {todoListScreenApi} from './api/todoListScreenApi'
 import {CreateTodo} from '../../features/createTodo/CreateTodo'
+import {Link} from 'react-router'
 
 interface IProps {
   userId?: string
@@ -43,7 +43,9 @@ export const TodoListScreen: React.FC<IProps> = () => {
               {todos.map((todo, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{todo.title}</td>
+                  <td>
+                    <Link to={`/todos/${todo.id}`}>{todo.title}</Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

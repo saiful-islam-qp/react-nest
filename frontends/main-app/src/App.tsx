@@ -1,10 +1,10 @@
 import {WuPrimaryNavbar} from '@npm-questionpro/wick-ui-lib'
 import './App.css'
-import {TodoListScreen} from './screens/todoListScreen/TodoListScreen'
 import {API_BASE_URL} from './constants/appConstants'
 import type {IServerResponse} from './types/IServerResponse'
 import type {IUser} from './types/IUser'
 import {useQuery, type UseQueryResult} from '@tanstack/react-query'
+import {AppRoutes} from './AppRoutes'
 
 const fetchUser = async (): Promise<IServerResponse<IUser>> => {
   return fetch(`${API_BASE_URL}user`, {
@@ -63,9 +63,8 @@ export const App: React.FC = () => {
             </a>,
           ]}
         />
-        <TodoListScreen />
+        <AppRoutes />
       </div>
-      <h1>{user?.email}</h1>
     </>
   )
 }

@@ -5,18 +5,19 @@ import userEvent from '@testing-library/user-event'
 import {http, HttpResponse, mswTestServer} from '../../../msw/mswTestServer'
 import {API_BASE_URL} from '../../../constants/appConstants'
 
+const todosRoute = {route: '/todos'}
+
 describe('TodoListScreen', () => {
   test('User should a todos list', async () => {
-    await testUtil.renderWithRoute(<App />, {route: '/'})
+    await testUtil.renderWithRoute(<App />, todosRoute)
 
-    // check todo list is displayed
     screen.getByRole('cell', {name: /todo 1/i})
     screen.getByRole('cell', {name: /todo 2/i})
     screen.getByRole('cell', {name: /todo 3/i})
   })
 
   test('User should be able to create a todo', async () => {
-    await testUtil.renderWithRoute(<App />, {route: '/'})
+    await testUtil.renderWithRoute(<App />, todosRoute)
 
     // open the create todo dialog
     const createTodoButton = await screen.findByRole('button', {
@@ -48,7 +49,7 @@ describe('TodoListScreen', () => {
         return HttpResponse.json({data: []})
       }),
     )
-    await testUtil.renderWithRoute(<App />, {route: '/'})
+    await testUtil.renderWithRoute(<App />, todosRoute)
 
     // verify welcome message is displayed with create todo button p
     screen.getByText(/welcome to the todo app/i)
@@ -56,7 +57,7 @@ describe('TodoListScreen', () => {
   })
 
   test('welcome message is not displayed if there are todos', async () => {
-    await testUtil.renderWithRoute(<App />, {route: '/'})
+    await testUtil.renderWithRoute(<App />, todosRoute)
 
     // verify welcome message is not displayed
     expect(screen.queryByText(/welcome to the todo app/i)).toBeNull()
@@ -70,7 +71,7 @@ describe('TodoListScreen', () => {
       }),
     )
 
-    await testUtil.renderWithRoute(<App />, {route: '/'})
+    await testUtil.renderWithRoute(<App />, todosRoute)
 
     // open the create todo dialog
     const createTodoButton = screen.getByRole('button', {name: /create todo/i})
@@ -85,21 +86,22 @@ describe('TodoListScreen', () => {
     expect(screen.queryByText('Please enter a title')).toBeNull()
     expect(saveButton.hasAttribute('disabled')).toBe(false)
 
+    console.error = vi.fn() // Mock console.error to avoid logging errors in test output
     await userEvent.click(saveButton)
 
-    // screen.debug()
     // verify error message is displayed
     await screen.findByText(/failed to fetch/i)
   })
 
   test('Error message is displayed if fetch todos api call fails', async () => {
+    console.error = vi.fn() // Mock console.error to avoid logging errors in test output
     mswTestServer.use(
       http.get(`${API_BASE_URL}todos`, async () => {
         return HttpResponse.error()
       }),
     )
 
-    await testUtil.renderWithRoute(<App />, {route: '/'})
+    await testUtil.renderWithRoute(<App />, todosRoute)
 
     // verify error message is displayed
     await screen.findByText(/failed to fetch/i)

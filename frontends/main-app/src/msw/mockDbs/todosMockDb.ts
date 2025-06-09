@@ -14,7 +14,17 @@ export const todosMockDb = {
   }[] => {
     return [...todos]
   },
-
+  getTodoById: (id: string): ITodo | null => {
+    const todoId = Number(id)
+    if (isNaN(todoId)) {
+      throw new Error(`Invalid todoId: ${id}`)
+    }
+    const todo = todos.find(t => t.id === todoId)
+    if (!todo) {
+      throw new Error(`Todo with id ${todoId} not found`)
+    }
+    return {...todo}
+  },
   createTodo: (title: string): ITodo => {
     if (!title || title.trim() === '') {
       throw new Error('Title is required')

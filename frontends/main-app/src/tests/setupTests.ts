@@ -16,10 +16,12 @@ beforeAll(() => {
 
 beforeEach(() => {})
 
+const originalConsoleError = console.error
 afterEach(() => {
   // Reset all request handlers
   mswTestServer.resetHandlers()
   cleanup()
+  console.error = originalConsoleError
 })
 
 afterAll(() => {

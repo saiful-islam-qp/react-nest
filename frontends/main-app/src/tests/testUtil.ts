@@ -22,7 +22,7 @@ export const testUtil = {
   renderWithRoute: async function renderWithRoute(
     ui: ReactElement,
     {
-      route = '/',
+      route = '/todos',
 
       ...renderOptions
     }: {route?: string; rest?: unknown[]} = {},
