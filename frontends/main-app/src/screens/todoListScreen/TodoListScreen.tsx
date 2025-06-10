@@ -3,6 +3,8 @@ import type {ITodo} from '../../types/ITodo'
 import {todoListScreenApi} from './api/todoListScreenApi'
 import {CreateTodo} from '../../features/createTodo/CreateTodo'
 import {Link} from 'react-router'
+import styles from './TodoListScreen.module.css'
+import {TodoListItem} from './components/TodoListItem'
 
 interface IProps {
   userId?: string
@@ -26,7 +28,7 @@ export const TodoListScreen: React.FC<IProps> = () => {
   const isTodosEmpty = todos.length === 0
 
   return (
-    <div>
+    <div className={styles.container}>
       {isTodosEmpty && <h1>Welcome to the Todo App</h1>}
       <CreateTodo onTodoCreated={handleTodoCreated} />
 
@@ -40,13 +42,8 @@ export const TodoListScreen: React.FC<IProps> = () => {
               </tr>
             </thead>
             <tbody>
-              {todos.map((todo, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>
-                    <Link to={`/todos/${todo.id}`}>{todo.title}</Link>
-                  </td>
-                </tr>
+              {todos.map(todo => (
+                <TodoListItem key={todo.id} todo={todo} />
               ))}
             </tbody>
           </table>

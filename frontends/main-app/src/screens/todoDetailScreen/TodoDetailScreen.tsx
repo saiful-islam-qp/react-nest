@@ -6,6 +6,7 @@ import {
 } from '@npm-questionpro/wick-ui-lib'
 import {Link, useParams} from 'react-router'
 import {todoDetailApi} from './api/todoDetailApi'
+import styles from './TodoDetailScreen.module.css'
 
 const useTodoIdFromParams = (): number => {
   const {todoId} = useParams<{todoId: string}>()
@@ -37,7 +38,7 @@ export const TodoDetailScreen: React.FC<React.PropsWithChildren> = () => {
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       <Link to="/todos">Go back to todos</Link>
       <WuFormGroup
         className="wu-form-group"
