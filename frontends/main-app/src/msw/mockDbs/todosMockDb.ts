@@ -1,18 +1,40 @@
 import type {ITodo} from '../../types/ITodo'
 
-const todos: ITodo[] = [
-  {id: 1, title: 'Todo 1', status: 'active'},
-  {id: 2, title: 'Todo 2', status: 'completed'},
-  {id: 3, title: 'Todo 3', status: 'active'},
-]
+const initTodos = (): ITodo[] => {
+  return Array.from({length: 21}, (_, index) => ({
+    id: index + 1,
+    title: `Todo ${index + 1}`,
+    status: index % 2 === 0 ? 'active' : 'completed',
+  })) as ITodo[]
+}
+
+let todos: ITodo[] = initTodos()
 
 export const todosMockDb = {
-  getTodos: (): {
+  reset: (): void => {
+    todos = initTodos()
+  },
+  getTodosCount: (): number => {
+    return todos.length
+  },
+  getTodos: (
+    page: number,
+    pageSize: number,
+  ): {
     id: number
     title: string
     status: 'active' | 'completed'
   }[] => {
-    return [...todos]
+    if (isNaN(page) || page <= 0) {
+      throw new Error(`Invalid page number: ${page}`)
+    }
+    if (!pageSize || pageSize <= 0) {
+      throw new Error(`Invalid pageSize: ${pageSize}`)
+    }
+    const startIndex = (page - 1) * pageSize
+    const endIndex = startIndex + pageSize
+    const todosForPage = todos.slice(startIndex, endIndex)
+    return [...todosForPage]
   },
   getTodoById: (id: string): ITodo | null => {
     const todoId = Number(id)
@@ -35,7 +57,8 @@ export const todosMockDb = {
       title,
       status: 'active',
     }
-    todos.push(newTodo)
+    // add to the top
+    todos.unshift(newTodo)
     return {...newTodo}
   },
 }

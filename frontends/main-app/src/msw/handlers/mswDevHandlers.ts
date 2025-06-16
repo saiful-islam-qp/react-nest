@@ -18,6 +18,8 @@ const delayedResponse = async (delay = 1000): Promise<void> => {
     })
 }
 
+const DEFAULT_PAGE_SIZE = 10
+
 export const mswDevHandlers = [
   http.get(`${API_BASE_URL}user`, () => {
     const user = userMockDb.getUser()
@@ -50,7 +52,21 @@ export const mswDevHandlers = [
   }),
   http.get(`${API_BASE_URL}todos`, async ({request}) => {
     await delayedResponse()
+    const url = new URL(request.url)
+    const pageSizeString = url.searchParams.get('pageSize')
+    const pageString = url.searchParams.get('page')
+    const pageSize = pageSizeString ? Number(pageSizeString) : DEFAULT_PAGE_SIZE
 
-    return sendResponse(todosMockDb.getTodos())
+    const page = pageString ? Number(pageString) : 1
+
+    const todos = todosMockDb.getTodos(page, pageSize)
+    const response = {
+      page,
+      pageSize,
+      totalCount: todosMockDb.getTodosCount(),
+      data: todos,
+    }
+
+    return sendResponse(response)
   }),
 ]

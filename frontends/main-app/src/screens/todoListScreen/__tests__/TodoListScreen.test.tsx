@@ -11,7 +11,8 @@ describe('TodoListScreen', () => {
   test('User should a todos list', async () => {
     await testUtil.renderWithRoute(<App />, todosRoute)
 
-    screen.getByRole('cell', {name: /todo 1/i})
+    // pattern that ends with 'todo 1'
+    screen.getByRole('cell', {name: 'Todo 1'})
     screen.getByRole('cell', {name: /todo 2/i})
     screen.getByRole('cell', {name: /todo 3/i})
   })
@@ -46,7 +47,14 @@ describe('TodoListScreen', () => {
   test('welcome message is displayed if there are no todos', async () => {
     mswTestServer.use(
       http.get(`${API_BASE_URL}todos`, async () => {
-        return HttpResponse.json({data: []})
+        return HttpResponse.json({
+          data: {
+            data: [],
+            page: 1,
+            pageSize: 10,
+            totalCount: 0,
+          },
+        })
       }),
     )
     await testUtil.renderWithRoute(<App />, todosRoute)
@@ -105,5 +113,80 @@ describe('TodoListScreen', () => {
 
     // verify error message is displayed
     await screen.findByText(/failed to fetch/i)
+  })
+
+  describe('Pagination', () => {
+    test('should go to next ore previous page on using next/previous buttons', async () => {
+      await testUtil.renderWithRoute(<App />, todosRoute)
+
+      // previous button should not be visible on first page
+      expect(
+        screen.queryByRole('button', {name: /previous/i}),
+      ).not.toBeInTheDocument()
+
+      const nextButton = screen.getByRole('button', {name: /next/i})
+      await userEvent.click(nextButton)
+
+      // verify that the next page is displayed
+      screen.getByRole('cell', {name: /todo 11/i})
+      screen.getByRole('cell', {name: /todo 12/i})
+
+      // previous button should be visible now
+      const previousButton = screen.getByRole('button', {name: /previous/i})
+      await userEvent.click(previousButton)
+      // verify that the previous page is displayed
+      screen.getByRole('cell', {name: 'Todo 1'})
+      screen.getByRole('cell', {name: /todo 2/i})
+    })
+
+    test('previous and next buttons should not be visible on first and last page respectively', async () => {
+      await testUtil.renderWithRoute(<App />, todosRoute)
+
+      // previous button should not be visible on first page
+      expect(
+        screen.queryByRole('button', {name: /previous/i}),
+      ).not.toBeInTheDocument()
+
+      // There are three pages of todos, so next button should be visible
+      const nextButton = screen.getByRole('button', {name: /next/i})
+      await userEvent.click(nextButton)
+      await screen.findByRole('cell', {name: /todo 11/i})
+      await userEvent.click(screen.getByRole('button', {name: /next/i}))
+      await screen.findByRole('cell', {name: /todo 21/i})
+      // Now we are on the last page, so next button should not be visible
+      expect(
+        screen.queryByRole('button', {name: /next/i}),
+      ).not.toBeInTheDocument()
+
+      // next button should not be visible on last page
+      expect(
+        screen.queryByRole('button', {name: /next/i}),
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  test('should not show next & previous button if there are no todos', async () => {
+    mswTestServer.use(
+      http.get(`${API_BASE_URL}todos`, async () => {
+        return HttpResponse.json({
+          data: {
+            data: [],
+            page: 1,
+            pageSize: 10,
+            totalCount: 0,
+          },
+        })
+      }),
+    )
+
+    await testUtil.renderWithRoute(<App />, todosRoute)
+
+    // verify next and previous buttons are not displayed
+    expect(
+      screen.queryByRole('button', {name: /next/i}),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', {name: /previous/i}),
+    ).not.toBeInTheDocument()
   })
 })
