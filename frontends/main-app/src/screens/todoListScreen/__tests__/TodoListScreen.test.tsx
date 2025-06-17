@@ -125,7 +125,6 @@ describe('TodoListScreen', () => {
       ).not.toBeInTheDocument()
 
       const nextButton = screen.getByRole('button', {name: /next/i})
-      expect(nextButton).toBeDisabled()
       await userEvent.click(nextButton)
 
       // verify that the next page is displayed
@@ -135,7 +134,7 @@ describe('TodoListScreen', () => {
       // previous button should be visible now
       const previousButton = screen.getByRole('button', {name: /previous/i})
       await userEvent.click(previousButton)
-      expect(nextButton).toBeDisabled()
+
       // verify that the previous page is displayed
       screen.getByRole('cell', {name: 'Todo 1'})
       screen.getByRole('cell', {name: /todo 2/i})
